@@ -1,8 +1,10 @@
 name: SoulJars
-version: 1.0
+version: ${project.version}
 author: mrCookieSlime
 website: http://TheBusyBiscuit.github.io/
+
+main: me.mrCookieSlime.SoulJars.SoulJars
 depend: [CS-CoreLib, Slimefun]
 softdepend: [EmeraldEnchants]
 
-main: me.mrCookieSlime.SoulJars.SoulJars
+api-version: 1.13
