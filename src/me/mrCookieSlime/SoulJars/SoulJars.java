@@ -1,13 +1,11 @@
 package me.mrCookieSlime.SoulJars;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,15 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.CSCoreLibPlugin.PluginUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Player.PlayerInventory;
 import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
-import me.mrCookieSlime.EmeraldEnchants.CustomEnchantment.ApplicableItem;
-import me.mrCookieSlime.EmeraldEnchants.EmeraldEnchants;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
 import me.mrCookieSlime.Slimefun.Objects.Category;
@@ -40,13 +35,11 @@ public class SoulJars extends JavaPlugin implements Listener {
 	private ItemStack jar;
 	private int required_souls;
 
-	private boolean emeraldenchants;
-
 	@Override
 	public void onEnable() {
 		PluginUtils utils = new PluginUtils(this);
 		utils.setupConfig();
-
+		
 		Config cfg = utils.getConfig();
 
 		required_souls = cfg.getInt("required-souls");
@@ -66,26 +59,12 @@ public class SoulJars extends JavaPlugin implements Listener {
 
 		getServer().getPluginManager().registerEvents(this, this);
 
-		emeraldenchants = getServer().getPluginManager().isPluginEnabled("EmeraldEnchants");
-
-		if (emeraldenchants) {
-			EmeraldEnchants.getInstance().getRegistry().registerEnchantment("SOUL_CLEAVER", jar, 5, Arrays.asList(ApplicableItem.SWORD, ApplicableItem.AXE), Arrays.asList("When killing Mobs to get their Soul", "using a Soul Jar, you have a Chance", "to get Bonus Souls when killing a Mob"));
-
-			ItemStack sword = new CustomItem(Material.STONE_SWORD, "&cDemonic Sword");
-			sword.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
-			EmeraldEnchants.getInstance().getRegistry().applyEnchantment(sword, EmeraldEnchants.getInstance().getRegistry().getEnchantmentByID("SOUL_CLEAVER"), 3);
-
-			new SlimefunItem(category, sword, "DEMONIC_SWORD", RecipeType.ANCIENT_ALTAR,
-			new ItemStack[] {SlimefunItems.RUNE_ENDER, new ItemStack(Material.BLAZE_ROD), SlimefunItems.RUNE_ENDER, new ItemStack(Material.SOUL_SAND), SlimefunItems.ESSENCE_OF_AFTERLIFE, new ItemStack(Material.SOUL_SAND), SlimefunItems.RUNE_ENDER, new ItemStack(Material.SOUL_SAND), SlimefunItems.RUNE_ENDER})
-			.register();
-		}
-
 		for (String mob : cfg.getStringList("mobs")) {
 			try {
 				EntityType type = EntityType.valueOf(mob);
 				registerSoul(mob, type);
 			} catch(Exception x) {
-				System.err.println("[SoulJars] " + x.getClass().getName() + " " + mob);
+				System.err.println("[SoulJars] " + x.getClass().getName() + " for (maybe invalid) Mob Type: " + mob);
 			}
 		}
 	}
@@ -94,11 +73,10 @@ public class SoulJars extends JavaPlugin implements Listener {
 		mobs.add(type);
 
 		Material m = Material.getMaterial(type.toString() + "_SPAWN_EGG");
-		if (m == null)
-			m = Material.POPPY;
-
+		if (m == null) m = Material.ZOMBIE_SPAWN_EGG;
+		
 		new SlimefunItem(category, new CustomItem(CustomSkull.getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19"), "&bSoul Jar &7(" + StringUtils.format(mob) + ")", "", "&7Infused Souls: &e0"), mob + "_SOUL_JAR", recipeType,
-		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill the " + StringUtils.format(mob)), null, null, null})
+		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill 1x " + StringUtils.format(mob)), null, null, null})
 		.register();
 
 		new SlimefunItem(category, new CustomItem(CustomSkull.getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19"), "&cSoul Jar &7(" + StringUtils.format(mob) + ")", "", "&7Infused Souls: &e" + required_souls), mob + "_SOUL_JAR_2", recipeType,
@@ -122,14 +100,8 @@ public class SoulJars extends JavaPlugin implements Listener {
 				if (SlimefunManager.isItemSimiliar(stack, SlimefunItem.getItem(e.getEntity().getType().toString() + "_SOUL_JAR"), false)) {
 					List<String> lore = stack.getItemMeta().getLore();
 					int souls = Integer.parseInt(ChatColor.stripColor(lore.get(1)).split(": ")[1]);
-					if (emeraldenchants) {
-						int level = EmeraldEnchants.getInstance().getRegistry().getEnchantmentLevel(stack, "SOUL_CLEAVER");
-						if (level == 0) souls++;
-						else {
-							souls = souls + 1 + CSCoreLib.randomizer().nextInt(level);
-						}
-					}
-					else souls++;
+					souls++;
+					
 					if (souls >= required_souls) {
 						killer.getInventory().setItem(slot, SlimefunItem.getItem(e.getEntity().getType().toString() + "_SOUL_JAR_2"));
 					}
