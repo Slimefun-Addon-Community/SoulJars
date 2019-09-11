@@ -1,9 +1,9 @@
 name: SoulJars
 version: ${project.version}
-author: mrCookieSlime
+author: TheBusyBiscuit
 website: http://TheBusyBiscuit.github.io/
 
-main: me.mrCookieSlime.SoulJars.SoulJars
+main: io.github.thebusybiscuit.souljars.SoulJars
 depend: [CS-CoreLib, Slimefun]
 softdepend: [EmeraldEnchants]
 
