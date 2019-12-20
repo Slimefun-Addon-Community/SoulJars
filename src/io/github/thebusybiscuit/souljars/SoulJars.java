@@ -16,11 +16,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.mrCookieSlime.CSCoreLibPlugin.general.String.StringUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
 import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.bstats.bukkit.Metrics;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
+import me.mrCookieSlime.Slimefun.cscorelib2.skull.SkullItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.BukkitUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.Updater;
@@ -62,7 +62,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		if (cfg.getBoolean("options.auto-update")) updater.start();
 
 		try {
-			category = new Category(new CustomItem(CustomSkull.getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19"), "&bSoul Jars", "", "&a> Click to open"));
+			category = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19"), "&bSoul Jars", "", "&a> Click to open"));
 			recipeType = new RecipeType(new CustomItem(Material.DIAMOND_SWORD, "&cKill the specified Mob", "&cwhile having an empty Soul Jar", "&cin your Inventory"));
 			jar = new SlimefunItemStack("SOUL_JAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19", "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rhis Soul to this Jar");
 		} catch (Exception e) {
@@ -118,7 +118,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		String jarType = e.getEntity().getType().toString() + "_SOUL_JAR";
 		for (int slot = 0; slot < killer.getInventory().getSize(); slot++) {
 			ItemStack stack = killer.getInventory().getItem(slot);
-			if (stack != null && SlimefunManager.isItemSimiliar(stack, SlimefunItem.getItem(jarType), false)) {
+			if (stack != null && SlimefunManager.isItemSimilar(stack, SlimefunItem.getItem(jarType), false)) {
 				List<String> lore = stack.getItemMeta().getLore();
 				int souls = Integer.parseInt(ChatColor.stripColor(lore.get(1)).split(": ")[1]) + 1, requiredSouls = mobs.get(e.getEntityType());
 
@@ -152,7 +152,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 
 		for (int slot = 0; slot < killer.getInventory().getSize(); slot++) {
 			ItemStack stack = killer.getInventory().getItem(slot);
-			if (stack != null && SlimefunManager.isItemSimiliar(stack, jar, false)) {
+			if (stack != null && SlimefunManager.isItemSimilar(stack, jar, false)) {
 				stack.setAmount(stack.getAmount() - 1);
 				killer.getWorld().dropItemNaturally(e.getEntity().getLocation(), SlimefunItem.getItem(jarType));
 				return;
