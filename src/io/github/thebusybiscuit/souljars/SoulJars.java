@@ -24,6 +24,7 @@ import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
 import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.bstats.bukkit.Metrics;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
+import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.BukkitUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
@@ -95,11 +96,11 @@ public class SoulJars extends JavaPlugin implements Listener {
 		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(mob)), null, null, null}, true)
 		.register();
 		
-		new FilledJar(category, new SlimefunItemStack("FILLED_" + mob + "_SOUL_JAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19", "&cFilled Soul Jar &7(" + format(mob) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
+		new HiddenItem(category, new SlimefunItemStack("FILLED_" + mob + "_SOUL_JAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19", "&cFilled Soul Jar &7(" + format(mob) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
 		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(mob)), null, null, null})
 		.register();
 
-		new SlimefunItem(category, new SlimefunItemStack(mob + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(mob), "", "&cFractured, must be repaired in an Ancient Altar"), RecipeType.ANCIENT_ALTAR,
+		new HiddenItem(category, new SlimefunItemStack(mob + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(mob), "", "&cFractured, must be repaired in an Ancient Altar"), RecipeType.ANCIENT_ALTAR,
 		new ItemStack[] {new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, SlimefunItem.getItem("FILLED_" + mob + "_SOUL_JAR"), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS)})
 		.register();
 	}
@@ -121,11 +122,12 @@ public class SoulJars extends JavaPlugin implements Listener {
 			
 			if (stack != null && SlimefunManager.isItemSimilar(stack, SlimefunItem.getItem(jarType), false)) {
 				List<String> lore = stack.getItemMeta().getLore();
-				int souls = Integer.parseInt(ChatColor.stripColor(lore.get(1)).split(": ")[1]) + 1, requiredSouls = mobs.get(e.getEntityType());
+				int souls = Integer.parseInt(ChatColor.stripColor(lore.get(1)).split(": ")[1]) + 1;
+				int requiredSouls = mobs.get(e.getEntityType());
 
 				if (souls >= requiredSouls) {
 					if (stack.getAmount() > 1) {
-						stack.setAmount(stack.getAmount() - 1);
+						ItemUtils.consumeItem(stack, false);
 						killer.getInventory().addItem(SlimefunItem.getItem("FILLED_" + jarType));
 					} 
 					else {
@@ -159,7 +161,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 			ItemStack stack = killer.getInventory().getItem(slot);
 			
 			if (stack != null && SlimefunManager.isItemSimilar(stack, jar, false)) {
-				stack.setAmount(stack.getAmount() - 1);
+				ItemUtils.consumeItem(stack, false);
 				killer.getWorld().dropItemNaturally(e.getEntity().getLocation(), SlimefunItem.getItem(jarType));
 				return;
 			}

@@ -7,9 +7,9 @@ import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 
-public class FilledJar extends SlimefunItem {
+public class HiddenItem extends SlimefunItem {
 
-	public FilledJar(Category category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
+	public HiddenItem(Category category, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
 		super(category, item, recipeType, recipe);
 		this.hidden = true;
 	}
