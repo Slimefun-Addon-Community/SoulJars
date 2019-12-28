@@ -86,7 +86,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 	}
 	
 	private String getID(EntityType type, boolean filled) {
-		return filled ? "FILLED_": "" + type.toString() + "_SOUL_JAR";
+		return (filled ? "FILLED_": "") + type.toString() + "_SOUL_JAR";
 	}
 
 	private void registerSoul(EntityType type) {
