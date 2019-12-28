@@ -62,7 +62,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		// Only run the Updater if it has not been disabled
 		if (cfg.getBoolean("options.auto-update")) updater.start();
 
-		jar = new SlimefunItemStack("SOUL_JAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19", "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
+		jar = new SlimefunItemStack("SOUL_JAR", TEXTURE, "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
 		category = new Category(new CustomItem(jar, "&bSoul Jars", "", "&a> Click to open"));
 		recipeType = new RecipeType(new CustomItem(Material.DIAMOND_SWORD, "&cKill the specified Mob", "&cwhile having an empty Soul Jar", "&cin your Inventory"));
 		
@@ -78,30 +78,34 @@ public class SoulJars extends JavaPlugin implements Listener {
 		for (String mob : cfg.getStringList("mobs")) {
 			try {
 				EntityType type = EntityType.valueOf(mob);
-				registerSoul(mob, type);
+				registerSoul(type);
 			} catch(Exception x) {
 				getLogger().log(Level.SEVERE, "An Exception was thrown for the (maybe invalid) Mob Type: " + mob, x);
 			}
 		}
 	}
+	
+	private String getID(EntityType type, boolean filled) {
+		return filled ? "FILLED_": "" + type.toString() + "_SOUL_JAR";
+	}
 
-	private void registerSoul(String mob, EntityType type) {
+	private void registerSoul(EntityType type) {
 		int souls = cfg.getOrSetDefault("souls-required." + type.toString(), 128);
 		mobs.put(type, souls);
 		
 		Material m = Material.getMaterial(type.toString() + "_SPAWN_EGG");
 		if (m == null) m = Material.ZOMBIE_SPAWN_EGG;
 		
-		new SlimefunItem(category, new SlimefunItemStack(mob + "_SOUL_JAR", TEXTURE, "&cSoul Jar &7(" + format(mob) + ")", "", "&7Infused Souls: &e1"), mob + "_SOUL_JAR", recipeType,
-		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(mob)), null, null, null}, true)
+		new SlimefunItem(category, new SlimefunItemStack(getID(type, false), TEXTURE, "&cSoul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e1"), recipeType,
+		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(type.toString())), null, null, null})
 		.register();
 		
-		new FilledJar(category, new SlimefunItemStack("FILLED_" + mob + "_SOUL_JAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19", "&cFilled Soul Jar &7(" + format(mob) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
-		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(mob)), null, null, null})
+		new FilledJar(category, new SlimefunItemStack(getID(type, true), TEXTURE, "&cFilled Soul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
+		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(type.toString())), null, null, null})
 		.register();
 
-		new SlimefunItem(category, new SlimefunItemStack(mob + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(mob), "", "&cFractured, must be repaired in an Ancient Altar"), RecipeType.ANCIENT_ALTAR,
-		new ItemStack[] {new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, SlimefunItem.getItem("FILLED_" + mob + "_SOUL_JAR"), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS)})
+		new SlimefunItem(category, new SlimefunItemStack(type.toString() + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(type.toString()), "", "&cFractured, must be repaired in an Ancient Altar"), RecipeType.ANCIENT_ALTAR,
+		new ItemStack[] {new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, SlimefunItem.getItem(getID(type, true)), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS)})
 		.register();
 	}
 
@@ -115,7 +119,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		if (killer == null)
 			return;
 
-		String jarType = e.getEntity().getType().toString() + "_SOUL_JAR";
+		String jarType = getID(e.getEntity().getType(), false);
 		
 		for (int slot = 0; slot < killer.getInventory().getSize(); slot++) {
 			ItemStack stack = killer.getInventory().getItem(slot);
@@ -128,10 +132,10 @@ public class SoulJars extends JavaPlugin implements Listener {
 				if (souls >= requiredSouls) {
 					if (stack.getAmount() > 1) {
 						ItemUtils.consumeItem(stack, false);
-						killer.getInventory().addItem(SlimefunItem.getItem("FILLED_" + jarType));
+						killer.getInventory().addItem(SlimefunItem.getItem(getID(e.getEntity().getType(), true)));
 					} 
 					else {
-						killer.getInventory().setItem(slot, SlimefunItem.getItem("FILLED_" + jarType));
+						killer.getInventory().setItem(slot, SlimefunItem.getItem(getID(e.getEntity().getType(), true)));
 					}
 				} 
 				else {
