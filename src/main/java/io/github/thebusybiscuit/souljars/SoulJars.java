@@ -26,7 +26,6 @@ import me.mrCookieSlime.Slimefun.bstats.bukkit.Metrics;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
-import me.mrCookieSlime.Slimefun.cscorelib2.updater.BukkitUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.Updater;
 
@@ -47,20 +46,12 @@ public class SoulJars extends JavaPlugin implements Listener {
 		// Setting up bStats
 		new Metrics(this);
 
-		// Setting up the Auto-Updater
-		Updater updater;
-
-		if (!getDescription().getVersion().startsWith("DEV - ")) {
-			// We are using an official build, use the BukkitDev Updater
-			updater = new BukkitUpdater(this, getFile(), 101706);
+		if (getDescription().getVersion().startsWith("DEV - ")) {
+			Updater updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/SoulJars/master");
+			
+			// Only run the Updater if it has not been disabled
+			if (cfg.getBoolean("options.auto-update")) updater.start();
 		}
-		else {
-			// If we are using a development build, we want to switch to our custom 
-			updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/SoulJars/master");
-		}
-
-		// Only run the Updater if it has not been disabled
-		if (cfg.getBoolean("options.auto-update")) updater.start();
 
 		jar = new SlimefunItemStack("SOUL_JAR", TEXTURE, "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
 		category = new Category(new CustomItem(jar, "&bSoul Jars", "", "&a> Click to open"));
