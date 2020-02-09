@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,7 +45,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		cfg = new Config(this);
 		
 		// Setting up bStats
-		new Metrics(this);
+		new Metrics(this, 5581);
 
 		if (getDescription().getVersion().startsWith("DEV - ")) {
 			Updater updater = new GitHubBuildsUpdater(this, getFile(), "TheBusyBiscuit/SoulJars/master");
@@ -54,7 +55,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 		}
 
 		jar = new SlimefunItemStack("SOUL_JAR", TEXTURE, "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
-		category = new Category(new CustomItem(jar, "&bSoul Jars", "", "&a> Click to open"));
+		category = new Category(new NamespacedKey(this, "soul_jars"), new CustomItem(jar, "&bSoul Jars", "", "&a> Click to open"));
 		recipeType = new RecipeType(new CustomItem(Material.DIAMOND_SWORD, "&cKill the specified Mob", "&cwhile having an empty Soul Jar", "&cin your Inventory"));
 		
 		new SlimefunItem(category, jar, RecipeType.ANCIENT_ALTAR, new ItemStack[] {
