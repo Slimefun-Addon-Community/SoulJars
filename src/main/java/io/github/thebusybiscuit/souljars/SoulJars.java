@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
 import me.mrCookieSlime.Slimefun.Objects.Category;
@@ -30,9 +31,9 @@ import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.GitHubBuildsUpdater;
 import me.mrCookieSlime.Slimefun.cscorelib2.updater.Updater;
 
-public class SoulJars extends JavaPlugin implements Listener {
+public class SoulJars extends JavaPlugin implements Listener, SlimefunAddon {
 
-	private static final String TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzc3N2VlMTY2YzQ3Y2FlNjk4YWU2Yjc2OWRhNGUyYjY3ZjQ2ODg1NTMzMGFkN2JkZGQ3NTFjNTI5M2YifX19";
+	private final String texture = "bd1c777ee166c47cae698ae6b769da4e2b67f468855330ad7bddd751c5293f";
 	private final Map<EntityType, Integer> mobs = new EnumMap<>(EntityType.class);
 	
 	private Config cfg;
@@ -54,7 +55,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 			if (cfg.getBoolean("options.auto-update")) updater.start();
 		}
 
-		jar = new SlimefunItemStack("SOUL_JAR", TEXTURE, "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
+		jar = new SlimefunItemStack("SOUL_JAR", texture, "&bSoul Jar &7(Empty)", "", "&rKill a Mob while having this", "&rItem in your Inventory to bind", "&rtheir Soul to this Jar");
 		category = new Category(new NamespacedKey(this, "soul_jars"), new CustomItem(jar, "&bSoul Jars", "", "&a> Click to open"));
 		recipeType = new RecipeType(new CustomItem(Material.DIAMOND_SWORD, "&cKill the specified Mob", "&cwhile having an empty Soul Jar", "&cin your Inventory"));
 		
@@ -63,7 +64,7 @@ public class SoulJars extends JavaPlugin implements Listener {
 				new ItemStack(Material.SOUL_SAND), SlimefunItems.NECROTIC_SKULL, new ItemStack(Material.SOUL_SAND), 
 				SlimefunItems.RUNE_AIR, new ItemStack(Material.SOUL_SAND), SlimefunItems.RUNE_FIRE
 		}, new CustomItem(jar, 3))
-		.register();
+		.register(this);
 
 		getServer().getPluginManager().registerEvents(this, this);
 
@@ -88,17 +89,18 @@ public class SoulJars extends JavaPlugin implements Listener {
 		Material m = Material.getMaterial(type.toString() + "_SPAWN_EGG");
 		if (m == null) m = Material.ZOMBIE_SPAWN_EGG;
 		
-		new SlimefunItem(category, new SlimefunItemStack(getID(type, false), TEXTURE, "&cSoul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e1"), recipeType,
+		new SlimefunItem(category, new SlimefunItemStack(getID(type, false), texture, "&cSoul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e1"), recipeType,
 		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(type.toString())), null, null, null})
-		.register();
+		.register(this);
 		
-		new FilledJar(category, new SlimefunItemStack(getID(type, true), TEXTURE, "&cFilled Soul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
+		new FilledJar(category, new SlimefunItemStack(getID(type, true), texture, "&cFilled Soul Jar &7(" + format(type.toString()) + ")", "", "&7Infused Souls: &e" + souls), recipeType,
 		new ItemStack[] {null, null, null, jar, null, new CustomItem(m, "&rKill " + souls + "x " + format(type.toString())), null, null, null})
-		.register();
+		.register(this);
 
 		new SlimefunItem(category, new SlimefunItemStack(type.toString() + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(type.toString()), "", "&cFractured, must be repaired in an Ancient Altar"), RecipeType.ANCIENT_ALTAR,
-		new ItemStack[] {new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, SlimefunItem.getItem(getID(type, true)), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS)})
-		.register();
+		new ItemStack[] {new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, SlimefunItem.getItem(getID(type, true)), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS), SlimefunItems.RUNE_EARTH, new ItemStack(Material.IRON_BARS)},
+		new SlimefunItemStack("BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + format(type.toString()), "", "&cFractured, must be repaired in an Ancient Altar"))
+		.register(this);
 	}
 
 	@EventHandler
@@ -175,6 +177,16 @@ public class SoulJars extends JavaPlugin implements Listener {
 			i++;
 		}
 		return builder.toString();
+	}
+
+	@Override
+	public JavaPlugin getJavaPlugin() {
+		return this;
+	}
+
+	@Override
+	public String getBugTrackerURL() {
+		return "https://github.com/TheBusyBiscuit/SoulJars/issues";
 	}
 
 }
