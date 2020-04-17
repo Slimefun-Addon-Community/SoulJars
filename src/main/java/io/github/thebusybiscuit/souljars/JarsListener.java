@@ -84,9 +84,9 @@ public class JarsListener implements Listener {
         for (int slot = 0; slot < killer.getInventory().getSize(); slot++) {
             ItemStack stack = killer.getInventory().getItem(slot);
 
-            if (jar.isItem(stack)) {
+            if (emptyJar.isItem(stack)) {
                 ItemUtils.consumeItem(stack, false);
-                killer.getWorld().dropItemNaturally(e.getEntity().getLocation(), emptyJar.getItem().clone());
+                killer.getWorld().dropItemNaturally(e.getEntity().getLocation(), jar.getItem().clone());
                 return;
             }
         }
