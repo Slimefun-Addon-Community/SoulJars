@@ -61,7 +61,7 @@ public class SoulJars extends JavaPlugin implements Listener, SlimefunAddon {
                 registerSoul(type);
             }
             catch (Exception x) {
-                getLogger().log(Level.SEVERE, x, () -> "An Exception was thrown for the (maybe invalid) Mob Type: " + mob);
+                getLogger().log(Level.SEVERE, "{0}: Possibly invalid mob type: {1}", new Object[] { x.getClass().getSimpleName(), mob });
             }
         }
 
