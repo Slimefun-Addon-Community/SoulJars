@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
+import io.github.thebusybiscuit.slimefun4.implementation.items.blocks.BrokenSpawner;
 import io.github.thebusybiscuit.slimefun4.implementation.items.blocks.UnplaceableBlock;
 import io.github.thebusybiscuit.slimefun4.utils.ChatUtils;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
@@ -93,9 +94,12 @@ public class SoulJars extends JavaPlugin implements Listener, SlimefunAddon {
         new ItemStack[] { null, null, null, emptyJar, null, new CustomItem(mobEgg, "&rKill " + souls + "x " + name), null, null, null });
         filledJar.register(this);
 
-        SlimefunItemStack spawnerItem = new SlimefunItemStack(type.toString() + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + name, "", "&cFractured, must be repaired in an Ancient Altar");
+        BrokenSpawner brokenSpawner = SlimefunItems.BROKEN_SPAWNER.getItem(BrokenSpawner.class);
+
+        SlimefunItemStack spawnerItem = new SlimefunItemStack(type.toString() + "_BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner &7(" + name + ")");
         new SlimefunItem(category, spawnerItem, RecipeType.ANCIENT_ALTAR, 
-        new ItemStack[] { new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, filledJarItem, SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS) }, new SlimefunItemStack("BROKEN_SPAWNER", Material.SPAWNER, "&cBroken Spawner", "&7Type: &b" + name, "", "&cFractured, must be repaired in an Ancient Altar")).register(this);
+        new ItemStack[] { new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, filledJarItem, SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS), SlimefunItems.EARTH_RUNE, new ItemStack(Material.IRON_BARS) }, 
+        brokenSpawner.getItemForEntityType(type)).register(this);
         // @formatter:on
     }
 
