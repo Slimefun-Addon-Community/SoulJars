@@ -1,10 +1,10 @@
 name: SoulJars
 version: ${project.version}
 author: TheBusyBiscuit
-website: http://TheBusyBiscuit.github.io/
+website: https://github.com/TheBusyBiscuit/souljars
 
+api-version: 1.14
 main: io.github.thebusybiscuit.souljars.SoulJars
-depend: [CS-CoreLib, Slimefun]
-softdepend: [EmeraldEnchants]
 
-api-version: 1.13
+depend:
+- Slimefun
