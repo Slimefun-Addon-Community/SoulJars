@@ -65,7 +65,7 @@
                     <!-- Shade dependencies into the output jar -->
                     <relocations>
                         <relocation>
-                            <pattern>org.bstats.bukkit</pattern>
+                            <pattern>org.bstats</pattern>
                             <shadedPattern>io.github.thebusybiscuit.souljars.bstats</shadedPattern>
                         </relocation>
                     </relocations>
@@ -97,14 +97,14 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.TheBusyBiscuit</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-19</version>
+            <version>RC-20</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
