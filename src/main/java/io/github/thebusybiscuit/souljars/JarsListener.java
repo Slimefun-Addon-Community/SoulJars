@@ -12,8 +12,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
-import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
+import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.items.ItemUtils;
 
 public class JarsListener implements Listener {
 
@@ -24,7 +24,7 @@ public class JarsListener implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         this.plugin = plugin;
-        this.emptyJar = SlimefunItem.getByID("SOUL_JAR");
+        this.emptyJar = SlimefunItem.getById("SOUL_JAR");
     }
 
     @EventHandler
@@ -36,8 +36,8 @@ public class JarsListener implements Listener {
 
         Player killer = e.getEntity().getKiller();
 
-        SlimefunItem jar = SlimefunItem.getByID(e.getEntityType().name() + "_SOUL_JAR");
-        SlimefunItem filledJar = SlimefunItem.getByID("FILLED_" + e.getEntityType().name() + "_SOUL_JAR");
+        SlimefunItem jar = SlimefunItem.getById(e.getEntityType().name() + "_SOUL_JAR");
+        SlimefunItem filledJar = SlimefunItem.getById("FILLED_" + e.getEntityType().name() + "_SOUL_JAR");
 
         // Filling all existing Jars
         for (int slot = 0; slot < killer.getInventory().getSize(); slot++) {
