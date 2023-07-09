@@ -86,7 +86,15 @@ public class JarsListener implements Listener {
 
             if (emptyJar.isItem(stack)) {
                 ItemUtils.consumeItem(stack, false);
-                killer.getWorld().dropItemNaturally(e.getEntity().getLocation(), jar.getItem().clone());
+                int freeSlot = killer.getInventory().firstEmpty();
+                if (freeSlot != -1) {
+                    // There is a free inventory slot, use it
+                    killer.getInventory().setItem(freeSlot, jar.getItem().clone());
+                }
+                else {
+                    // No free space, drop the jar at the killer's feet
+                    killer.getWorld().dropItemNaturally(killer.getLocation(), jar.getItem().clone());
+                }
                 return;
             }
         }
